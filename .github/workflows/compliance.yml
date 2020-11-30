@@ -1,0 +1,26 @@
+name: Compliance
+
+on: pull_request
+
+jobs:
+  compliance_job:
+    runs-on: ubuntu-latest
+    name: Run compliance checks on patch series (PR)
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        with:
+          path: ncs/nrfxlib
+          # ref: ${{ github.event.pull_request.head.sha }}
+          # fetch-depth: 0
+      - name: Run Compliance Tests
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        working-directory: ncs
+        run: |
+          west init -m https://github.com/nrfconnect/sdk-nrf
+          west update zephyr
+          export ZEPHYR_BASE=$(pwd)/zephyr
+          cd nrfxlib
+          echo ok
+          $ZEPHYR_BASE/scripts/ci/check_compliance.py -m Codeowners -m Devicetree -m Gitlint -m Identity -m Nits -m pylint -m checkpatch -m Kconfig -c origin/${BASE_REF}.. || true
