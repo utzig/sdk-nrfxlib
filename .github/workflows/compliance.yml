@@ -35,6 +35,7 @@ jobs:
           pip3 install -U gitlint
           pip3 install -r zephyr/scripts/requirements-compliance.txt
           cd nrfxlib
+          ln -s ../nrf/.checkpatch.conf .
           $ZEPHYR_BASE/scripts/ci/check_compliance.py -m Codeowners -m Devicetree -m Gitlint -m Identity -m Nits -m pylint -m checkpatch -m Kconfig -c origin/${BASE_REF}.. || true
 
       - name: Upload Results
